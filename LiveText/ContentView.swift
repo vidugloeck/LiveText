@@ -12,6 +12,11 @@ struct ContentView: View {
         Image("TestImage")
             .resizable()
             .padding()
+            .onAppear {
+                OCR.recognize(image: UIImage(named: "TestImage")!.cgImage!) { result in
+                    print(result)
+                }
+            }
     }
 }
 
