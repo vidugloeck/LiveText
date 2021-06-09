@@ -8,13 +8,13 @@
 import SwiftUI
 
 struct ContentView: View {
+    let image = UIImage(named: "TestImage")!
+    @State var results: [DisplayResult]? = []
     var body: some View {
-        Image("TestImage")
-            .resizable()
-            .padding()
+        VisionView(image: image, ocrResults: results)
             .onAppear {
-                OCR.recognize(image: UIImage(named: "TestImage")!.cgImage!) { result in
-                    print(result)
+                OCR.recognize(image: image.cgImage!) { result in
+                    results = result
                 }
             }
     }
