@@ -10,8 +10,22 @@ import SwiftUI
 struct ContentView: View {
     let image = UIImage(named: "TestImage")!
     @State var results: [DisplayResult]? = []
+    var text: String {
+        if let results = results, results.count > 0 {
+            return results.map(\.text).joined(separator: " ")
+        }
+        return "Processing"
+    }
     var body: some View {
-        VisionView(image: image, ocrResults: results)
+        VStack {
+            VisionView(image: image, ocrResults: results)
+            ScrollView(.horizontal) {
+               Text(text)
+                    .padding()
+            }
+            .background(Color.gray)
+            
+        }
             .onAppear {
                 OCR.recognize(image: image.cgImage!) { result in
                     results = result
