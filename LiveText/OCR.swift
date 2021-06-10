@@ -6,10 +6,10 @@ struct OCR {
         Array(VNRecognizeTextRequest.supportedRevisions)
     }
     private static var currentRequest: VNRecognizeTextRequest?
-    static func recognize(image: CGImage, revision: Int, completion: @escaping ([DisplayResult]?) -> Void) {
+    static func recognize(image: CGImage, request: OCRRequest, completion: @escaping ([DisplayResult]?) -> Void) {
         currentRequest?.cancel()
         let requestHandler = VNImageRequestHandler(cgImage: image)
-        let textRecognitionRequest = createRequest(revision: revision, completion: completion)
+        let textRecognitionRequest = createRequest(ocrRequest: request, completion: completion)
         DispatchQueue.global(qos: .userInteractive).async  {
             do {
                 try requestHandler.perform([textRecognitionRequest])
@@ -21,7 +21,7 @@ struct OCR {
         
     }
     
-    private static func createRequest(revision: Int, completion: @escaping ([DisplayResult]?) -> Void) -> VNRecognizeTextRequest {
+    private static func createRequest(ocrRequest: OCRRequest, completion: @escaping ([DisplayResult]?) -> Void) -> VNRecognizeTextRequest {
         let request = VNRecognizeTextRequest { request, error in
             DispatchQueue.main.async {
                 if let request = request as? VNRecognizeTextRequest, let results = request.results {
@@ -31,11 +31,17 @@ struct OCR {
                 }
             }
         }
-        request.revision = revision
+        request.revision = ocrRequest.revision
+        request.recognitionLevel = ocrRequest.textRecognitionLevel.vnTextRecognitionLevel
         
         return request
     }
         
+}
+
+struct OCRRequest {
+    let revision: Int
+    let textRecognitionLevel: TextRecognitionLevel
 }
 
 struct DisplayResult: Equatable {
@@ -53,5 +59,21 @@ extension DisplayResult {
         topLeft = observation.topLeft
         topRight = observation.topRight
         text = observation.topCandidates(1)[0].string
+    }
+}
+
+enum TextRecognitionLevel: String, CaseIterable {
+    case fast
+    case accurate
+}
+
+extension TextRecognitionLevel {
+    var vnTextRecognitionLevel: VNRequestTextRecognitionLevel {
+        switch self {
+        case .fast:
+            return .fast
+        case .accurate:
+            return .accurate
+        }
     }
 }

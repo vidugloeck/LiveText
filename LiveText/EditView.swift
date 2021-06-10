@@ -9,6 +9,7 @@ import SwiftUI
 
 enum EditType {
     case revision(Binding<Int>)
+    case accuracy(Binding<TextRecognitionLevel>)
 }
 
 extension EditType: Identifiable {
@@ -16,6 +17,8 @@ extension EditType: Identifiable {
         switch self {
         case .revision:
             return 0
+        case .accuracy:
+            return 1
         }
     }
 }
@@ -26,6 +29,8 @@ struct EditView: View {
         switch editType {
         case .revision(current: let revision):
             RevisionView(revision: revision)
+        case .accuracy(let level):
+            AccuracyView(level: level)
         }
     }
 }
@@ -37,6 +42,18 @@ struct RevisionView: View {
         Picker("", selection: revision) {
             ForEach(OCR.revisions, id: \.self) {
                 Text("Version \($0)")
+            }
+        }
+    }
+}
+
+struct AccuracyView: View {
+    let level: Binding<TextRecognitionLevel>
+    
+    var body: some View {
+        Picker("", selection: level) {
+            ForEach(TextRecognitionLevel.allCases, id: \.self) {
+                Text($0.rawValue)
             }
         }
     }

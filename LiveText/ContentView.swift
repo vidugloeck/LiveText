@@ -10,7 +10,14 @@ import SwiftUI
 
 struct Model: Equatable {
     var results: [DisplayResult]? = []
-    var revision: Int = OCR.revisions.first!
+    var revision: Int = OCR.revisions.last!
+    var textRecognitionLevel: TextRecognitionLevel = .accurate
+}
+
+extension Model {
+    var ocrRequest: OCRRequest {
+        OCRRequest(revision: revision, textRecognitionLevel: textRecognitionLevel)
+    }
 }
 
 struct ContentView: View {
@@ -26,7 +33,10 @@ struct ContentView: View {
     var body: some View {
         VStack {
             VisionView(image: image, ocrResults: model.results)
-            Button(action: { edit = .revision($model.revision) }) { Text("Revision").buttonStyle(.bordered) }
+            HStack {
+                Button(action: { edit = .revision($model.revision) }) { text(for: "Revision") }
+                Button(action: { edit = .accuracy($model.textRecognitionLevel) }) { text(for: "Accuracy") }
+            }
             ScrollView(.horizontal) {
                Text(text)
                     .padding()
@@ -41,8 +51,14 @@ struct ContentView: View {
         .onChange(of: model) { _ in recognize() }
     }
     
+    func text(for text: String) -> some View {
+        Text(text)
+            .padding()
+            .buttonStyle(.bordered)
+    }
+    
     func recognize() {
-        OCR.recognize(image: image.cgImage!, revision: model.revision) { result in
+        OCR.recognize(image: image.cgImage!, request: model.ocrRequest) { result in
             model.results = result
         }
     }
