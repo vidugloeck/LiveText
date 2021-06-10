@@ -7,18 +7,26 @@
 
 import SwiftUI
 
+
+struct Model: Equatable {
+    var results: [DisplayResult]? = []
+    var revision: Int = OCR.revisions.first!
+}
+
 struct ContentView: View {
     let image = UIImage(named: "TestImage")!
-    @State var results: [DisplayResult]? = []
+    @State var model = Model()
+    @State var edit: EditType? = nil
     var text: String {
-        if let results = results, results.count > 0 {
+        if let results = model.results, results.count > 0 {
             return results.map(\.text).joined(separator: " ")
         }
         return "Processing"
     }
     var body: some View {
         VStack {
-            VisionView(image: image, ocrResults: results)
+            VisionView(image: image, ocrResults: model.results)
+            Button(action: { edit = .revision($model.revision) }) { Text("Revision").buttonStyle(.bordered) }
             ScrollView(.horizontal) {
                Text(text)
                     .padding()
@@ -26,11 +34,17 @@ struct ContentView: View {
             .background(Color.gray)
             
         }
-            .onAppear {
-                OCR.recognize(image: image.cgImage!) { result in
-                    results = result
-                }
-            }
+        .sheet(item: $edit, onDismiss: { edit = nil }, content: { edit in
+            EditView(editType: edit)
+        })
+        .onAppear { recognize() }
+        .onChange(of: model) { _ in recognize() }
+    }
+    
+    func recognize() {
+        OCR.recognize(image: image.cgImage!, revision: model.revision) { result in
+            model.results = result
+        }
     }
 }
 

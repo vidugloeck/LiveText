@@ -14,6 +14,7 @@
 		84CC41D826712665004C516F /* OCR.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84CC41D726712665004C516F /* OCR.swift */; };
 		84CC41DA26714AFC004C516F /* AnnotationLayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84CC41D926714AFC004C516F /* AnnotationLayer.swift */; };
 		84CC41DC26714B27004C516F /* VisionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84CC41DB26714B26004C516F /* VisionView.swift */; };
+		84CC41DE2671D30E004C516F /* EditView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84CC41DD2671D30E004C516F /* EditView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -25,6 +26,7 @@
 		84CC41D726712665004C516F /* OCR.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OCR.swift; sourceTree = "<group>"; };
 		84CC41D926714AFC004C516F /* AnnotationLayer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnnotationLayer.swift; sourceTree = "<group>"; };
 		84CC41DB26714B26004C516F /* VisionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VisionView.swift; sourceTree = "<group>"; };
+		84CC41DD2671D30E004C516F /* EditView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -59,6 +61,7 @@
 			children = (
 				84CC41C9267121F8004C516F /* LiveTextApp.swift */,
 				84CC41CB267121F8004C516F /* ContentView.swift */,
+				84CC41DD2671D30E004C516F /* EditView.swift */,
 				84CC41D726712665004C516F /* OCR.swift */,
 				84CC41DB26714B26004C516F /* VisionView.swift */,
 				84CC41D926714AFC004C516F /* AnnotationLayer.swift */,
@@ -148,6 +151,7 @@
 			files = (
 				84CC41DA26714AFC004C516F /* AnnotationLayer.swift in Sources */,
 				84CC41D826712665004C516F /* OCR.swift in Sources */,
+				84CC41DE2671D30E004C516F /* EditView.swift in Sources */,
 				84CC41CC267121F8004C516F /* ContentView.swift in Sources */,
 				84CC41DC26714B27004C516F /* VisionView.swift in Sources */,
 				84CC41CA267121F8004C516F /* LiveTextApp.swift in Sources */,
@@ -289,7 +293,7 @@
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
-				IPHONEOS_DEPLOYMENT_TARGET = 14.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -319,7 +323,7 @@
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
-				IPHONEOS_DEPLOYMENT_TARGET = 14.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
