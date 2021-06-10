@@ -2,7 +2,9 @@ import Foundation
 import Vision
 
 struct OCR {
+    private static var currentRequest: VNRecognizeTextRequest?
     static func recognize(image: CGImage, completion: @escaping ([DisplayResult]?) -> Void) {
+        currentRequest?.cancel()
         let requestHandler = VNImageRequestHandler(cgImage: image)
         let textRecognitionRequest = createRequest(completion)
         DispatchQueue.global(qos: .userInteractive).async  {
@@ -12,6 +14,7 @@ struct OCR {
                 completion(nil)
             }
         }
+        currentRequest = textRecognitionRequest
         
     }
     
