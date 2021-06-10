@@ -10,6 +10,7 @@ import SwiftUI
 enum EditType {
     case revision(Binding<Int>)
     case accuracy(Binding<TextRecognitionLevel>)
+    case minHeight(Binding<Float>)
 }
 
 extension EditType: Identifiable {
@@ -19,6 +20,8 @@ extension EditType: Identifiable {
             return 0
         case .accuracy:
             return 1
+        case .minHeight:
+            return 2
         }
     }
 }
@@ -31,6 +34,8 @@ struct EditView: View {
             RevisionView(revision: revision)
         case .accuracy(let level):
             AccuracyView(level: level)
+        case .minHeight(let minHeight):
+            MinHeightView(minHeight: minHeight)
         }
     }
 }
@@ -55,6 +60,18 @@ struct AccuracyView: View {
             ForEach(TextRecognitionLevel.allCases, id: \.self) {
                 Text($0.rawValue)
             }
+        }
+    }
+}
+
+struct MinHeightView: View {
+    let minHeight: Binding<Float>
+    
+    var body: some View {
+        VStack {
+            // FIXME: Use new formatter
+            Text("\(minHeight.wrappedValue * 100.0, specifier: "%.1f") %")
+            Slider(value: minHeight, in: 0...1)
         }
     }
 }

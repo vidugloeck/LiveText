@@ -33,6 +33,7 @@ struct OCR {
         }
         request.revision = ocrRequest.revision
         request.recognitionLevel = ocrRequest.textRecognitionLevel.vnTextRecognitionLevel
+        request.minimumTextHeight = ocrRequest.minTextHeight
         
         return request
     }
@@ -42,6 +43,7 @@ struct OCR {
 struct OCRRequest {
     let revision: Int
     let textRecognitionLevel: TextRecognitionLevel
+    let minTextHeight: Float
 }
 
 struct DisplayResult: Equatable {
