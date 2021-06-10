@@ -6,7 +6,7 @@ struct OCR {
         Array(VNRecognizeTextRequest.supportedRevisions)
     }
     private static var currentRequest: VNRecognizeTextRequest?
-    static func recognize(image: CGImage, request: OCRRequest, completion: @escaping ([DisplayResult]?) -> Void) {
+    static func recognize(image: CGImage, request: OCRRequest, completion: @escaping ([OCRResult]?) -> Void) {
         currentRequest?.cancel()
         let requestHandler = VNImageRequestHandler(cgImage: image)
         let textRecognitionRequest = createRequest(ocrRequest: request, completion: completion)
@@ -21,11 +21,11 @@ struct OCR {
         
     }
     
-    private static func createRequest(ocrRequest: OCRRequest, completion: @escaping ([DisplayResult]?) -> Void) -> VNRecognizeTextRequest {
+    private static func createRequest(ocrRequest: OCRRequest, completion: @escaping ([OCRResult]?) -> Void) -> VNRecognizeTextRequest {
         let request = VNRecognizeTextRequest { request, error in
             DispatchQueue.main.async {
                 if let request = request as? VNRecognizeTextRequest, let results = request.results {
-                    completion(results.map(DisplayResult.init))
+                    completion(results.map(OCRResult.init))
                 } else {
                     completion(nil)
                 }
@@ -46,7 +46,7 @@ struct OCRRequest {
     let minTextHeight: Float
 }
 
-struct DisplayResult: Equatable {
+struct OCRResult: Equatable {
     let text: String
     let bottomLeft: CGPoint
     let bottomRight: CGPoint
@@ -54,7 +54,7 @@ struct DisplayResult: Equatable {
     let topRight: CGPoint
 }
 
-extension DisplayResult {
+extension OCRResult {
     init(observation: VNRecognizedTextObservation) {
         bottomLeft = observation.bottomLeft
         bottomRight = observation.bottomRight

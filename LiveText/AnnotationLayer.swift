@@ -15,7 +15,7 @@ import UIKit
 import QuartzCore
 
 class AnnotationLayer: CALayer {
-    var results: [DisplayResult] = [] {
+    var results: [OCRResult] = [] {
         didSet {
             setNeedsDisplay()
         }

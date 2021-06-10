@@ -11,7 +11,7 @@ import UIKit
 
 struct VisionView: UIViewRepresentable {
     let image: UIImage
-    var ocrResults: [DisplayResult]?
+    var ocrResults: [OCRResult]?
     
     func makeUIView(context: Context) -> UIView {
         VisionUIView(image: image)
@@ -32,7 +32,7 @@ fileprivate class VisionUIView: UIView {
         }
     }
     
-    var ocrResults: [DisplayResult] = [] {
+    var ocrResults: [OCRResult] = [] {
         didSet {
             annotationLayer.results = ocrResults
         }

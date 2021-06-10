@@ -9,7 +9,7 @@ import SwiftUI
 
 
 struct Model: Equatable {
-    var results: [DisplayResult] = []
+    var results: [OCRResult] = []
     var revision: Int = OCR.revisions.last!
     var textRecognitionLevel: TextRecognitionLevel = .accurate
     var minTextHeight: Float = 1/32
