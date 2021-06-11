@@ -5,6 +5,14 @@ struct OCR {
     static var revisions: [Int] {
         Array(VNRecognizeTextRequest.supportedRevisions)
     }
+    
+    @available(iOS 15.0, *)
+    static func availableLanguages(revision: Int, accuracy: TextRecognitionLevel) -> [String]? {
+        let request = VNRecognizeTextRequest(completionHandler: nil)
+        request.revision = revision
+        request.recognitionLevel = accuracy.vnTextRecognitionLevel
+        return try? request.supportedRecognitionLanguages()
+    }
     private static var currentRequest: VNRecognizeTextRequest?
     static func recognize(image: CGImage, request: OCRRequest, completion: @escaping ([OCRResult]?) -> Void) {
         currentRequest?.cancel()
@@ -34,6 +42,9 @@ struct OCR {
         request.revision = ocrRequest.revision
         request.recognitionLevel = ocrRequest.textRecognitionLevel.vnTextRecognitionLevel
         request.minimumTextHeight = ocrRequest.minTextHeight
+        if ocrRequest.languages.count > 0 {
+            request.recognitionLanguages = ocrRequest.languages
+        }
         
         return request
     }
@@ -44,6 +55,7 @@ struct OCRRequest {
     let revision: Int
     let textRecognitionLevel: TextRecognitionLevel
     let minTextHeight: Float
+    let languages: [String]
 }
 
 struct OCRResult: Equatable {

@@ -11,6 +11,7 @@ enum EditType {
     case revision(Binding<Int>)
     case accuracy(Binding<TextRecognitionLevel>)
     case minHeight(Binding<Float>)
+    case language(LanguageViewModel)
 }
 
 extension EditType: Identifiable {
@@ -22,6 +23,8 @@ extension EditType: Identifiable {
             return 1
         case .minHeight:
             return 2
+        case .language:
+            return 3
         }
     }
 }
@@ -36,6 +39,12 @@ struct EditView: View {
             AccuracyView(level: level)
         case .minHeight(let minHeight):
             MinHeightView(minHeight: minHeight)
+        case .language(let model):
+            if #available(iOS 15.0, *) {
+                LanguageView(model: model)
+            } else {
+                Text("Not available in iOS 14")
+            }
         }
     }
 }
@@ -72,6 +81,25 @@ struct MinHeightView: View {
             // FIXME: Use new formatter
             Text("\(minHeight.wrappedValue * 100.0, specifier: "%.1f") %")
             Slider(value: minHeight, in: 0...1)
+        }
+    }
+}
+
+struct LanguageViewModel {
+    let availableLanguages: [String]
+    let languages: Binding<String>
+}
+
+struct LanguageView: View {
+    let model: LanguageViewModel
+    
+    var body: some View {
+        VStack {
+            Picker("", selection: model.languages) {
+                ForEach(model.availableLanguages, id: \.self) {
+                    Text($0)
+                }
+            }
         }
     }
 }
