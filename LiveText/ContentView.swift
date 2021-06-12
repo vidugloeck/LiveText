@@ -9,62 +9,105 @@ import SwiftUI
 
 
 struct Model: Equatable {
-    var results: [OCRResult] = []
     var revision: Int = OCR.revisions.last!
     var textRecognitionLevel: TextRecognitionLevel = .accurate
     var minTextHeight: Float = 0
-    var language: String = ""
+    var language: Language = .none
 }
 
-extension Model {
-    var ocrRequest: OCRRequest {
-        return OCRRequest(revision: revision, textRecognitionLevel: textRecognitionLevel, minTextHeight: minTextHeight, languages: ocrLanguages)
+enum Language: Equatable, Hashable {
+    case none
+    case all
+    case specific(String)
+    
+    init(text: String) {
+        if text == "None" { self = .none }
+        if text == "All" { self = .all }
+        self = .specific(text)
     }
     
-    var ocrLanguages: [String] {
-        if language.isEmpty || language == "None" { return [] }
-        if language == "All" {
+    var text: String {
+        switch self {
+        case .none:
+            return "None"
+        case .all:
+            return "All"
+        case .specific(let language):
+            return language
+        }
+    }
+}
+
+struct ViewModel {
+    init() {
+        availableLanguages = updateAvailableLanguages()
+    }
+    var model = Model() {
+        didSet {
+            availableLanguages = updateAvailableLanguages()
+        }
+    }
+    var results: [OCRResult] = []
+    var revision: Int { get { model.revision } set { model.revision = newValue } }
+    var textRecognitionLevel: TextRecognitionLevel { get { model.textRecognitionLevel } set { model.textRecognitionLevel = newValue } }
+    var minTextHeight: Float { get { model.minTextHeight } set { model.minTextHeight = newValue } }
+    var language: Language { get { model.language } set { model.language = newValue } }
+    var editType: EditType? = nil
+    var isProcessing: Bool = false
+    var availableLanguages: [Language] = []
+    
+    func updateAvailableLanguages() -> [Language] {
+        if #available(iOS 15.0, *) {
+            return [.all, .none] + (OCR.availableLanguages(for: ocrRequest) ?? []).map(Language.init)
+        } else {
+            return [.none]
+        }
+    }
+    
+    var ocrRequest: OCRRequest {
+        OCRRequest(revision: revision, textRecognitionLevel: textRecognitionLevel, minTextHeight: minTextHeight, languages: ocrLanguages)
+    }
+    
+    private var ocrLanguages: [String] {
+        switch language {
+        case .none:
+            return []
+        case .all:
             if #available(iOS 15.0, *) {
-                return OCR.availableLanguages(revision: revision, accuracy: textRecognitionLevel) ?? []
+                return OCR.availableLanguages(for: ocrRequest) ?? []
             } else {
                 return []
             }
+        case .specific(let string):
+            return [string]
         }
-        return [language]
-        
     }
 }
 
 struct ContentView: View {
     let image = UIImage(named: "TestImage")!
-    @State var model = Model()
-    @State var edit: EditType? = nil
-    @State var isProcessing: Bool = false
+    @State var viewModel = ViewModel()
     var text: String {
-        if isProcessing { return "Processing ..." }
-        if model.results.isEmpty { return "No Results" }
-        return model.results.map(\.text).joined(separator: " ")
+        if viewModel.isProcessing { return "Processing ..." }
+        if viewModel.results.isEmpty { return "No Results" }
+        return viewModel.results.map(\.text).joined(separator: " ")
     }
     
     @available(iOS 15.0, *)
     var languageViewModel: LanguageViewModel {
-        LanguageViewModel(availableLanguages: availableLanguages, languages: $model.language)
-    }
-    
-    @available(iOS 15.0, *)
-    var availableLanguages: [String] {
-        ["All", "None"] + (OCR.availableLanguages(revision: model.revision, accuracy: model.textRecognitionLevel) ?? [])
+        LanguageViewModel(availableLanguages: viewModel.availableLanguages,
+                          language: $viewModel.language)
     }
 
     var body: some View {
         VStack {
-            VisionView(image: image, ocrResults: model.results)
+            VisionView(image: image, ocrResults: viewModel.results)
             HStack {
-                Button(action: { edit = .revision($model.revision) }) { text(for: "Revision") }
-                Button(action: { edit = .accuracy($model.textRecognitionLevel) }) { text(for: "Accuracy") }
-                Button(action: { edit = .minHeight($model.minTextHeight) }) { text(for: "Height") }
+                Button(action: { viewModel.editType = .revision($viewModel.revision) }) { text(for: "Revision") }
+                Button(action: { viewModel.editType = .accuracy($viewModel.textRecognitionLevel) }) { text(for: "Accuracy") }
+                Button(action: { viewModel.editType = .minHeight($viewModel.minTextHeight) }) { text(for: "Height") }
                 if #available(iOS 15.0, *) {
-                    Button(action: { edit = .language(languageViewModel) }) { text(for: "Language") }
+                    Button(action: { viewModel.editType = .language(languageViewModel) }) { text(for: "Language") }
                 } else {
                     Button(action: {}) { text(for: "Language") }
                     .disabled(true)
@@ -77,11 +120,19 @@ struct ContentView: View {
             .background(Color.gray)
             
         }
-        .sheet(item: $edit, onDismiss: { edit = nil }, content: { edit in
+        .sheet(item: $viewModel.editType, onDismiss: { viewModel.editType = nil }, content: { edit in
             EditView(editType: edit)
         })
         .onAppear { recognize() }
-        .onChange(of: model) { _ in recognize() }
+        .onChange(of: viewModel.model) { _ in recognize() }
+    }
+    
+    func recognize() {
+        viewModel.isProcessing = true
+        OCR.recognize(image: image.cgImage!, request: viewModel.ocrRequest) { result in
+            viewModel.results = result ?? []
+            viewModel.isProcessing = false
+        }
     }
     
     func text(for text: String) -> some View {
@@ -89,13 +140,7 @@ struct ContentView: View {
             .padding()
     }
     
-    func recognize() {
-        isProcessing = true
-        OCR.recognize(image: image.cgImage!, request: model.ocrRequest) { result in
-            model.results = result ?? []
-            isProcessing = false
-        }
-    }
+    
 }
 
 struct ContentView_Previews: PreviewProvider {

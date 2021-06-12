@@ -7,11 +7,8 @@ struct OCR {
     }
     
     @available(iOS 15.0, *)
-    static func availableLanguages(revision: Int, accuracy: TextRecognitionLevel) -> [String]? {
-        let request = VNRecognizeTextRequest(completionHandler: nil)
-        request.revision = revision
-        request.recognitionLevel = accuracy.vnTextRecognitionLevel
-        return try? request.supportedRecognitionLanguages()
+    static func availableLanguages(for request: OCRRequest) -> [String]? {
+        return try? createRequest(ocrRequest: request, completion: { _ in }).supportedRecognitionLanguages()
     }
     private static var currentRequest: VNRecognizeTextRequest?
     static func recognize(image: CGImage, request: OCRRequest, completion: @escaping ([OCRResult]?) -> Void) {
@@ -56,6 +53,8 @@ struct OCRRequest {
     let textRecognitionLevel: TextRecognitionLevel
     let minTextHeight: Float
     let languages: [String]
+    
+    
 }
 
 struct OCRResult: Equatable {

@@ -86,8 +86,8 @@ struct MinHeightView: View {
 }
 
 struct LanguageViewModel {
-    let availableLanguages: [String]
-    let languages: Binding<String>
+    let availableLanguages: [Language]
+    let language: Binding<Language>
 }
 
 struct LanguageView: View {
@@ -95,9 +95,9 @@ struct LanguageView: View {
     
     var body: some View {
         VStack {
-            Picker("", selection: model.languages) {
+            Picker("", selection: model.language) {
                 ForEach(model.availableLanguages, id: \.self) {
-                    Text($0)
+                    Text($0.text)
                 }
             }
         }
